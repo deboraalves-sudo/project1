@@ -35,6 +35,49 @@ public class Project1 {
                 System.out.println("Execution time: " + (endTime - startTime) + " ns\n");
             }
         }
+
+        System.out.println("\n======================================");
+        System.out.println("GRAPH TRAVERSAL PERFORMANCE ANALYSIS");
+        System.out.println("======================================");
+
+        int[] graphSizes = {100, 500, 1000, 5000, 10000};
+        DFSTraversal dfsTraversal = new DFSTraversal();
+
+        for (int vertices : graphSizes) {
+            int edges = vertices * 3;
+
+            long totalTime = 0;
+            long totalMemory = 0;
+            int visitedCount = 0;
+
+            for (int run = 0; run < 5; run++) {
+                Graph graph = generateRandomConnectedGraph(vertices, edges);
+
+                Runtime runtime = Runtime.getRuntime();
+                System.gc();
+
+                long memoryBefore = runtime.totalMemory() - runtime.freeMemory();
+                long startTime = System.nanoTime();
+
+               List<Integer> traversalOrder = dfsTraversal.execute(graph, 0);
+
+                long endTime = System.nanoTime();
+                long memoryAfter = runtime.totalMemory() - runtime.freeMemory();
+
+                totalTime += (endTime - startTime);
+                totalMemory += Math.max(0, memoryAfter - memoryBefore);
+                visitedCount = traversalOrder.size();
+            }
+
+            double avgTimeMs = totalTime / 5.0 / 1_000_000.0;
+            double avgMemoryKB = totalMemory / 5.0 / 1024.0;
+
+            System.out.println("Vertices: " + vertices +
+                    ", Edges: " + edges +
+                    ", Avg Runtime: " + avgTimeMs + " ms" +
+                    ", Avg Memory: " + avgMemoryKB + " KB" +
+                    ", Visited: " + visitedCount);
+        }
     }
 
     private static int[] generateRandomArray(int size) {
@@ -45,4 +88,33 @@ public class Project1 {
         }
         return array;
     }
+
+    private static Graph generateRandomConnectedGraph(int vertices, int edges) {
+        if (edges < vertices - 1) {
+            throw new IllegalArgumentException("Edges must be at least vertices - 1.");
+        }
+
+        Graph graph = new Graph(vertices);
+        Random rand = new Random();
+
+        for (int i = 0; i < vertices - 1; i++) {
+            graph.addEdge(i, i + 1);
+        }
+
+        int currentEdges = vertices - 1;
+
+        while (currentEdges < edges) {
+            int source = rand.nextInt(vertices);
+            int destination = rand.nextInt(vertices);
+
+            if (source != destination &&
+                    !graph.getAdjList().get(source).contains(destination)) {
+                graph.addEdge(source, destination);
+                currentEdges++;
+            }
+        }
+
+        return graph;
+    }
+
 }
