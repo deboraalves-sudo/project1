@@ -19,6 +19,10 @@ public class Project1 {
         algorithms.add(new MergeSort());
         algorithms.add(new QuickSort());
         // Teammates add their algorithms here...
+        algorithms.add(new LinearSearch());
+algorithms.add(new BinarySearch());
+
+
 
         for (int i = 0; i < testArrays.length; i++) {
             int[] original = testArrays[i];
