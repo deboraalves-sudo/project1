@@ -15,7 +15,12 @@ public class BinarySearch {
             int mid = (left + right) / 2;
 
             if (array[mid] == target) {
-                return new int[]{mid};
+                int value = array[mid];
+                for (int i = 0; i < input.length - 1; i++) {
+                    if (input[i] == value) {
+                        return new int[]{i};
+                    }
+                }
             } else if (array[mid] < target) {
                 left = mid + 1;
             } else {
